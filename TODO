@@ -1,6 +1,6 @@
 
 
-Serializer
+#Homework
 1. https://www.django-rest-framework.org/api-guide/serializers/
 2. https://www.django-rest-framework.org/api-guide/fields/
 3. https://www.django-rest-framework.org/api-guide/relations/
@@ -9,3 +9,27 @@ Serializer
 
 6. django filter
     https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
+https://docs.djangoproject.com/en/6.0/ref/models/querysets/#field-lookups
+
+
+#Homework
+1.
+category, product
+product uchun numberfilter
+4 desak, productning category sini nomini uzunligi 4ga teng bolganlarini chiqaring
+
+
+2. product, productimage
+
+product uchun numberfilter
+
+2 kiritsak, productni 2ta rasmi borlarini chiqarish kerak
+
+
+3. product, productimage
+product uchun filter
+
+true ni tanlasa productni rasmi borlari chiqarish
+false tanlansa barchasi chiqish kerak
+
+

@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     # Third party Apps
     'rest_framework',
     'drf_spectacular',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -53,6 +54,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "root.wsgi.application"
+AUTH_USER_MODEL = 'apps.User'
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -108,6 +110,11 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 2
 }
 
 SPECTACULAR_SETTINGS = {
