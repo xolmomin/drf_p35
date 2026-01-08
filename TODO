@@ -10,7 +10,8 @@
 6. django filter
     https://django-filter.readthedocs.io/en/latest/guide/rest_framework.html
 https://docs.djangoproject.com/en/6.0/ref/models/querysets/#field-lookups
-
+search
+order by
 
 #Homework
 1.
