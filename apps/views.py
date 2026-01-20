@@ -1,20 +1,52 @@
-# from django_filters.rest_framework import DjangoFilterBackend
-# from drf_spectacular.utils import extend_schema
-# from rest_framework.filters import SearchFilter, OrderingFilter
-# from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
-#     GenericAPIView
-# from rest_framework.pagination import LimitOffsetPagination, CursorPagination
-# from rest_framework.response import Response
-# from rest_framework.throttling import AnonRateThrottle
-# from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
+from drf_spectacular.utils import extend_schema
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.filters import SearchFilter, OrderingFilter
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
+    GenericAPIView, RetrieveAPIView
+from rest_framework.pagination import LimitOffsetPagination, CursorPagination
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.throttling import AnonRateThrottle
+from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from apps.models import Region, District, Category, User, Seller
 #
 # from apps.filters import UserFilterSet, OrderFilterSet
 # from apps.models import Category, Product, User, Order
 # from apps.paginations import CustomPageNumberPagination, CustomCursorPagination
-# from apps.serializers import CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
-#     OrderModelSerializer, \
-#     RegisterModelSerializer, ProductCreateModelSerializer
-#
+from apps.serializers import RegionModelSerializer, \
+    DistrictModelSerializer, \
+    CategoryModelSerializer, \
+    CustomTokenObtainPairSerializer, \
+    UserModelSerializer, \
+    SellerModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
+
+
+class RegionListAPIView(ListAPIView):
+    queryset = Region.objects.all()
+    serializer_class = RegionModelSerializer
+    pagination_class = None
+
+
+class DistrictListAPIView(ListAPIView):
+    queryset = District.objects.all()
+    serializer_class = DistrictModelSerializer
+    filter_backends = DjangoFilterBackend,
+    filterset_fields = 'region_id',
+    pagination_class = None
+
+
+class UserGetMeRetrieveAPIView(RetrieveAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserModelSerializer
+    permission_classes = IsAuthenticated,
+
+    def get_object(self):
+        return self.request.user
+
+
 #
 # class RegisterAPIView(CreateAPIView):
 #     queryset = User.objects.all()
@@ -25,13 +57,24 @@
 #         # send_email # celery
 #
 #
-# @extend_schema(tags=['products'])
-# class CategoryListCreateAPIView(ListCreateAPIView):
-#     queryset = Category.objects.all()
-#     serializer_class = CategoryModelSerializer
-#     pagination_class = None
-#     throttle_classes = [AnonRateThrottle]
-#
+@extend_schema(tags=['products'])
+class CategoryListCreateAPIView(ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategoryModelSerializer
+    pagination_class = None
+    permission_classes = IsAuthenticated,
+
+
+class SellerCreateAPIView(CreateAPIView):
+    queryset = Seller.objects.all()
+    serializer_class = SellerModelSerializer
+    permission_classes = IsAuthenticated,
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    pass
+    # serializer_class = CustomTokenObtainPairSerializer
+
 #
 # @extend_schema(tags=['products'])
 # class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):

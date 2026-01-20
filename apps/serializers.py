@@ -1,9 +1,32 @@
-# from django.contrib.auth.hashers import make_password
-# from rest_framework.exceptions import ValidationError
-# from rest_framework.fields import CharField
-# from rest_framework.serializers import ModelSerializer, Serializer
-#
-# from apps.models import Category, Product, User, Order
+from django.contrib.auth.hashers import make_password
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import CharField, HiddenField, CurrentUserDefault
+from rest_framework.serializers import ModelSerializer, Serializer
+from rest_framework_simplejwt.serializers import TokenObtainSerializer
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from apps.models import Region, District, Category, Product, User, Order, Seller
+
+
+class RegionModelSerializer(ModelSerializer):
+    class Meta:
+        model = Region
+        fields = '__all__'
+
+
+class DistrictModelSerializer(ModelSerializer):
+    class Meta:
+        model = District
+        # fields = '__all__'
+        exclude = 'region',
+
+
+class UserModelSerializer(ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'phone']
+
+
 #
 #
 # class RegisterModelSerializer(ModelSerializer):
@@ -33,30 +56,39 @@
 #         return data
 #
 #
-# class CategoryModelSerializer(ModelSerializer):
-#     address = CharField(max_length=255, default='valijon', read_only=True)
-#
-#     class Meta:
-#         model = Category
-#         # fields = '__all__'
-#         fields = ['id', 'name', 'address']
-#         # exclude = ['name']
-#
-#         read_only_fields = []
-#         # extra_kwargs = {
-#         #     'address': {'write_only': True}
-#         # }
-#
-#     def validate_name(self, value):
-#         if value.startswith('vali'):
-#             raise ValidationError('Vali deb saqlamaymiz!')
-#         return value
-#
-#     def to_representation(self, instance):
-#         repr = super().to_representation(instance)
-#         repr['plus_id'] = instance.pk * 2
-#
-#         return repr
+class CategoryModelSerializer(ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', ]
+
+        read_only_fields = []
+        # extra_kwargs = {
+        #     'address': {'write_only': True}
+        # }
+
+
+class SellerModelSerializer(ModelSerializer):
+    owner = HiddenField(default=CurrentUserDefault())
+
+    class Meta:
+        model = Seller
+        fields = '__all__'
+
+
+class CustomTokenObtainPairSerializer(TokenObtainSerializer):
+    token_class = RefreshToken
+
+    def validate(self, attrs) -> dict[str, str]:
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+
+        data["refresh"] = str(refresh)
+        data["access"] = str(refresh.access_token)
+        data["data"] = UserModelSerializer(self.user).data
+
+        return data
+
 #
 #
 # class ProductListModelSerializer(ModelSerializer):

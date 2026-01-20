@@ -11,6 +11,8 @@ from django.db.models.fields import SlugField, DateTimeField
 from django.db.models.fields.files import ImageFieldFile
 from django.utils.text import slugify
 
+from apps.models.utils import upload_to_image, upload_image_size_5mb_validator
+
 
 class SlugBaseModel(Model):
     slug = SlugField(max_length=255, unique=True, editable=False)
@@ -36,21 +38,8 @@ class CreatedBaseModel(Model):
         abstract = True
 
 
-def upload_image_size_5mb_validator(obj: ImageFieldFile):
-    if obj.size > 5 * 1024 * 1024:
-        raise ValidationError(f'This image is too big (max - 5mb) {obj.size / 1024 / 1024:.2f} MB')
-    return obj
-
-
-def upload_to_image(obj, filename: str):
-    _name = obj.__class__.__name__.lower()
-    date_path = datetime.now().strftime("%Y/%m/%d")
-
-    return f"{_name}/{date_path}/{filename}"
-
-
 class ImageBaseModel(Model):
-    image = ImageField(upload_to=upload_to_image,
+    image = ImageField(upload_to=upload_to_image, null=True, blank=True,
                        validators=[FileExtensionValidator(['jpeg', 'jpg', 'png', 'webp']),
                                    upload_image_size_5mb_validator],
                        help_text='jpg, png, webp are allowed')
@@ -80,5 +69,6 @@ class ImageBaseModel(Model):
 
     def save(self, *, force_insert=False, force_update=False, using=None, update_fields=None):
         # self.delete_old_img()
-        self.convert_img_to_webp()
+        if self.image:
+            self.convert_img_to_webp()
         super().save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)

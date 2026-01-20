@@ -1,8 +1,7 @@
-from django.core.validators import FileExtensionValidator
-from django.db.models import ForeignKey, CASCADE, ImageField
+from django.db.models import ForeignKey, CASCADE, Model
 from django.db.models.fields import CharField
 
-from apps.models.base import SlugBaseModel, CreatedBaseModel, upload_image_size_5mb_validator, ImageBaseModel
+from apps.models.base import SlugBaseModel, CreatedBaseModel, ImageBaseModel
 
 
 class Seller(SlugBaseModel, CreatedBaseModel):
@@ -11,5 +10,13 @@ class Seller(SlugBaseModel, CreatedBaseModel):
     address = CharField(max_length=255)
 
 
-class Manufacturer(CreatedBaseModel, ImageBaseModel):
+class Manufacturer(CreatedBaseModel, SlugBaseModel, ImageBaseModel):
     name = CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class ManufactureCategory(Model):
+    manufacturer = ForeignKey('apps.Manufacturer', CASCADE, to_field='slug')
+    category = ForeignKey('apps.Category', CASCADE, to_field='slug')
