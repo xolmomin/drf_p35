@@ -1,6 +1,6 @@
 from django.contrib.auth.hashers import make_password
 from rest_framework.exceptions import ValidationError
-from rest_framework.fields import CharField, HiddenField, CurrentUserDefault
+from rest_framework.fields import CharField, HiddenField, CurrentUserDefault, IntegerField
 from rest_framework.serializers import ModelSerializer, Serializer
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -25,6 +25,22 @@ class UserModelSerializer(ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'phone']
+
+
+class UserRegisterModelSerializer(ModelSerializer):
+    code = IntegerField(min_value=10_000, max_value=99_9999)
+
+    class Meta:
+        model = User
+        fields = ['phone']
+
+    def validate_phone(self, value):
+        # TODO check
+        return value
+
+    def validate(self, attrs):
+        # TODO check
+        return attrs
 
 
 #

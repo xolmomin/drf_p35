@@ -51,7 +51,13 @@ apilarni chiqarish
 6. user modelidan username olib tashash kerak ✅
 7. smsga kod yuborish (django background task orqali) ✅
 8. changepassword
-9. register paytida (first_name user-261823)
+9. api/v1/register paytida (first_name user-261823)
+phone
+code
+random string (6) password ga biriktiriladi (userga sms yuboradi)
+
+
+
 10. profiledagi malumotlarni ozgartirish
 
 

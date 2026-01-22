@@ -1,16 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView, \
-    GenericAPIView, RetrieveAPIView
-from rest_framework.pagination import LimitOffsetPagination, CursorPagination
+from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView, \
+    RetrieveAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
-from random import randint
 
 from apps.models import Region, District, Category, User, Seller
 #
@@ -22,8 +17,9 @@ from apps.serializers import RegionModelSerializer, \
     CategoryModelSerializer, \
     CustomTokenObtainPairSerializer, \
     UserModelSerializer, \
-    SellerModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
-from apps.tasks import send_sms_code
+    SellerModelSerializer, \
+    UserRegisterModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
+from apps.tasks import send_sms_code, register_sms
 
 
 class RegionListAPIView(ListAPIView):
@@ -44,8 +40,7 @@ class UserCheckPhoneAPIView(APIView):
     def get(self, request, phone):
         is_exists = User.objects.filter(phone=phone).exists()
         if not is_exists:
-            code = randint(100000, 999999)
-            send_sms_code.enqueue(phone, code)
+            register_sms.enqueue(phone)
 
         return Response({'data': {'is_exists': is_exists}})
 
@@ -60,7 +55,8 @@ class UserGetMeRetrieveAPIView(RetrieveAPIView):
 
 
 class UserRegisterCreateAPIView(CreateAPIView):
-    pass
+    queryset = User.objects.all()
+    serializer_class = UserRegisterModelSerializer
 
 
 #

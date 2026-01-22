@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
 )
 
 from apps.views import RegionListAPIView, DistrictListAPIView, CategoryListCreateAPIView, CustomTokenObtainPairView, \
-    UserGetMeRetrieveAPIView, SellerCreateAPIView, UserCheckPhoneAPIView
+    UserGetMeRetrieveAPIView, SellerCreateAPIView, UserCheckPhoneAPIView, UserRegisterCreateAPIView
 
 urlpatterns = [
     path('regions/', RegionListAPIView.as_view()),
@@ -24,7 +24,7 @@ urlpatterns = [
 
     path('users/exists/<int:phone>', UserCheckPhoneAPIView.as_view(), name='users_check_phone'),
     path('users/get-me/', UserGetMeRetrieveAPIView.as_view(), name='users_get_me'),
-    path('users/register/', UserRegisterCreateAPIView.as_view(), name='token_obtain_pair'),
+    path('users/register/', UserRegisterCreateAPIView.as_view(), name='users_register'),
     path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('refresh-token/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
