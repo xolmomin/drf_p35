@@ -48,7 +48,11 @@ apilarni chiqarish
 3. user apisi (get qilish mumkin emas)
 4. category
 5. product
-6. user modelidan username olib tashash kerak
-7. smsga kod yuborish (django background orqali)
+6. user modelidan username olib tashash kerak ✅
+7. smsga kod yuborish (django background task orqali) ✅
+8. changepassword
+9. register paytida (first_name user-261823)
+10. profiledagi malumotlarni ozgartirish
+
 
 filter larni qoshish

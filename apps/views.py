@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
+from random import randint
 
 from apps.models import Region, District, Category, User, Seller
 #
@@ -22,6 +23,7 @@ from apps.serializers import RegionModelSerializer, \
     CustomTokenObtainPairSerializer, \
     UserModelSerializer, \
     SellerModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
+from apps.tasks import send_sms_code
 
 
 class RegionListAPIView(ListAPIView):
@@ -38,6 +40,16 @@ class DistrictListAPIView(ListAPIView):
     pagination_class = None
 
 
+class UserCheckPhoneAPIView(APIView):
+    def get(self, request, phone):
+        is_exists = User.objects.filter(phone=phone).exists()
+        if not is_exists:
+            code = randint(100000, 999999)
+            send_sms_code.enqueue(phone, code)
+
+        return Response({'data': {'is_exists': is_exists}})
+
+
 class UserGetMeRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
@@ -45,6 +57,10 @@ class UserGetMeRetrieveAPIView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class UserRegisterCreateAPIView(CreateAPIView):
+    pass
 
 
 #
@@ -72,8 +88,7 @@ class SellerCreateAPIView(CreateAPIView):
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
-    pass
-    # serializer_class = CustomTokenObtainPairSerializer
+    serializer_class = CustomTokenObtainPairSerializer
 
 #
 # @extend_schema(tags=['products'])
