@@ -27,7 +27,8 @@ urlpatterns = [
     path('users/get-me/', UserGetMeRetrieveAPIView.as_view(), name='users_get_me'),
     path('users/change-password/', UserChangePasswordUpdateAPIView.as_view(), name='users_change_password'),
     path('users/update/', UserProfileUpdateAPIView.as_view(), name='users_profile_update'),
-    path('users/register/', UserRegisterCreateAPIView.as_view(), name='users_register'),
-    path('token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('refresh-token/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    path('auth/register/', UserRegisterCreateAPIView.as_view(), name='users_register'),
+    path('auth/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/refresh-token/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

@@ -57,7 +57,8 @@ phone
 code
 random string (6) password ga biriktiriladi (userga sms yuboradi)
 10. profiledagi malumotlarni ozgartirish ✅
-11. address apilarini chiqarish (default address ni belgilab ketish)
 
+11. address apilarini chiqarish (default address ni belgilab ketish)
+12. favorite va cart apilarini chiqarish
 
 filter larni qoshish
