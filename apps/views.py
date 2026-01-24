@@ -1,7 +1,7 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView, \
-    RetrieveAPIView
+    RetrieveAPIView, UpdateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -18,7 +18,9 @@ from apps.serializers import RegionModelSerializer, \
     CustomTokenObtainPairSerializer, \
     UserModelSerializer, \
     SellerModelSerializer, \
-    UserRegisterModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
+    UserRegisterModelSerializer, \
+    UserChangePasswordModelSerializer, \
+    UserProfileUpdateModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
 from apps.tasks import send_sms_code, register_sms
 
 
@@ -52,6 +54,29 @@ class UserGetMeRetrieveAPIView(RetrieveAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+class UserProfileUpdateAPIView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserProfileUpdateModelSerializer
+    permission_classes = IsAuthenticated,
+    http_method_names = ['patch']
+
+    def get_object(self):
+        return self.request.user
+
+
+class UserChangePasswordUpdateAPIView(UpdateAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserChangePasswordModelSerializer
+    permission_classes = IsAuthenticated,
+    http_method_names = ['patch']
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(request.user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"success": True})
 
 
 class UserRegisterCreateAPIView(CreateAPIView):

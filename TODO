@@ -38,7 +38,8 @@ change user model
 
 
 access
-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwMjA0Mjc4LCJpYXQiOjE3Njg5MDgyNzgsImp0aSI6IjUwYzgzYjQ1ZDg2NjQ5NTY5NmY1MjkyMDk0NTM1NGQyIiwidXNlcl9pZCI6IjEifQ.j4j64LGtzBuAgnYhHtKL3gJKBolnB5BgezPJqU8h51s
+935248052
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzcwNTQ2MDE2LCJpYXQiOjE3NjkyNTAwMTYsImp0aSI6IjQ4ODc1ZDBlNGY2YzQ1ZjA4MGVhMTQwMTJkOTljM2M2IiwidXNlcl9pZCI6IjEifQ.8uV10R4H3ltitfg93KALrFz-9ywxwc1lX4tC7-y09-8
 
 
 #homework
@@ -50,15 +51,13 @@ apilarni chiqarish
 5. product
 6. user modelidan username olib tashash kerak ✅
 7. smsga kod yuborish (django background task orqali) ✅
-8. changepassword
-9. api/v1/register paytida (first_name user-261823)
+8. changepassword ✅
+9. api/v1/register paytida (first_name user-261823) ✅
 phone
 code
 random string (6) password ga biriktiriladi (userga sms yuboradi)
-
-
-
-10. profiledagi malumotlarni ozgartirish
+10. profiledagi malumotlarni ozgartirish ✅
+11. address apilarini chiqarish (default address ni belgilab ketish)
 
 
 filter larni qoshish

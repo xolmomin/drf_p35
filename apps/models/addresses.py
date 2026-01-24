@@ -16,6 +16,7 @@ class District(Model):
 class Address(CreatedBaseModel):
     district = ForeignKey('apps.District', CASCADE, related_name='addresses')
     region = ForeignKey('apps.Region', CASCADE, related_name='addresses')
+    user = ForeignKey('apps.User', CASCADE, related_name='addresses')
     street = CharField(max_length=255)
     house_number = CharField(max_length=128)
     apartment = CharField(max_length=128, blank=True, null=True)
