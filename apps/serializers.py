@@ -1,14 +1,36 @@
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
+from django.db.models import F
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import CharField, HiddenField, CurrentUserDefault, IntegerField
 from rest_framework.serializers import ModelSerializer
 from rest_framework_simplejwt.serializers import TokenObtainSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from apps.models import Region, District, Category, User, Seller
+from apps.models import Region, District, Category, User, Seller, CartItem, Product, Favorite
 from apps.models.utils import uz_phone_validator
 from apps.tasks import register_key, generate_random_password, send_sms_code
+
+
+class DynamicFieldsModelSerializer(ModelSerializer):
+    """
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Don't pass the 'fields' arg up to the superclass
+        fields = kwargs.pop('fields', None)
+
+        # Instantiate the superclass normally
+        super().__init__(*args, **kwargs)
+
+        if fields is not None:
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields)
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
 
 
 class RegionModelSerializer(ModelSerializer):
@@ -146,14 +168,71 @@ class CustomTokenObtainPairSerializer(TokenObtainSerializer):
 
         return data
 
-#
-#
-# class ProductListModelSerializer(ModelSerializer):
-#     class Meta:
-#         model = Product
-#         fields = ['id', 'name', 'price', 'discount', 'in_stock']
-#
-#
+
+class ProductListModelSerializer(DynamicFieldsModelSerializer):
+    class Meta:
+        model = Product
+        fields = '__all__'
+
+
+class CartItemModelSerializer(ModelSerializer):
+    class Meta:
+        model = CartItem
+        fields = 'id', 'product', 'quantity'
+        extra_kwargs = {
+            'quantity': {'read_only': True},
+            'product': {'write_only': True}
+        }
+
+    def create(self, validated_data):
+        obj, updated = CartItem.objects.update_or_create(
+            defaults={'quantity': F('quantity') + 1},
+            create_defaults={'quantity': 1},
+            **validated_data
+        )
+        return obj
+
+        # cart_item, created = self.Meta.model.objects.get_or_create(**validated_data)
+        # if created:
+        #     return cart_item
+        # cart_item.quantity = F('quantity') + 1
+        # cart_item.save(update_fields=['quantity'])
+        # return cart_item
+
+    def to_representation(self, instance: CartItem):
+        repr_ = super().to_representation(instance)
+        user = self.context['request'].user
+
+        repr_.update(
+            **ProductListModelSerializer(instance.product,
+                                         fields=['name', 'slug', 'price', 'discount', 'first_image']).data)
+        repr_['seller_name'] = instance.product.seller.name
+        repr_['is_favorite'] = Favorite.objects.filter(user=user, product=instance.product).exists()
+
+        # slug, name, price, discount, image, seller_name, quantity
+        return repr_
+
+
+class FavoriteModelSerializer(DynamicFieldsModelSerializer):
+    user = HiddenField(default=CurrentUserDefault())
+
+    class Meta:
+        model = Favorite
+        fields = 'id', 'user'
+
+    def to_representation(self, instance: Favorite):
+        repr_ = super().to_representation(instance)
+        repr_.update(
+            **ProductListModelSerializer(instance.product,
+                                         fields=['name', 'slug', 'price', 'discount', 'first_image']).data)
+        cart_item = CartItem.objects.filter(cart__user=instance.user, product=instance.product).only('quantity').first()
+        if cart_item:
+            repr_['quantity'] = cart_item.quantity
+        else:
+            repr_['quantity'] = 0
+
+        return repr_
+
 # class ProductCreateModelSerializer(ModelSerializer):
 #     class Meta:
 #         model = Product

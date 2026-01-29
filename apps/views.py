@@ -1,13 +1,14 @@
+from django.db.models import Subquery
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView, \
-    RetrieveAPIView, UpdateAPIView
+    RetrieveAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from apps.models import Region, District, Category, User, Seller
+from apps.models import Region, District, Category, User, Seller, CartItem, Cart, Favorite, Product
 #
 # from apps.filters import UserFilterSet, OrderFilterSet
 # from apps.models import Category, Product, User, Order
@@ -20,8 +21,10 @@ from apps.serializers import RegionModelSerializer, \
     SellerModelSerializer, \
     UserRegisterModelSerializer, \
     UserChangePasswordModelSerializer, \
-    UserProfileUpdateModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
-from apps.tasks import send_sms_code, register_sms
+    UserProfileUpdateModelSerializer, \
+    CartItemModelSerializer, \
+    FavoriteModelSerializer  # CategoryModelSerializer, ProductListModelSerializer, UserModelSerializer, \
+from apps.tasks import register_sms
 
 
 class RegionListAPIView(ListAPIView):
@@ -38,6 +41,7 @@ class DistrictListAPIView(ListAPIView):
     pagination_class = None
 
 
+@extend_schema(tags=['auth'])
 class UserCheckPhoneAPIView(APIView):
     def get(self, request, phone):
         is_exists = User.objects.filter(phone=phone).exists()
@@ -47,6 +51,7 @@ class UserCheckPhoneAPIView(APIView):
         return Response({'data': {'is_exists': is_exists}})
 
 
+@extend_schema(tags=['users'])
 class UserGetMeRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserModelSerializer
@@ -56,6 +61,7 @@ class UserGetMeRetrieveAPIView(RetrieveAPIView):
         return self.request.user
 
 
+@extend_schema(tags=['users'])
 class UserProfileUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserProfileUpdateModelSerializer
@@ -66,6 +72,7 @@ class UserProfileUpdateAPIView(UpdateAPIView):
         return self.request.user
 
 
+@extend_schema(tags=['users'])
 class UserChangePasswordUpdateAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserChangePasswordModelSerializer
@@ -79,6 +86,7 @@ class UserChangePasswordUpdateAPIView(UpdateAPIView):
         return Response({"success": True})
 
 
+@extend_schema(tags=['auth'])
 class UserRegisterCreateAPIView(CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UserRegisterModelSerializer
@@ -94,6 +102,27 @@ class UserRegisterCreateAPIView(CreateAPIView):
 #         # send_email # celery
 #
 #
+
+class FavoriteListAPIView(ListCreateAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteModelSerializer
+    permission_classes = IsAuthenticated,
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)
+
+
+class FavoriteDestroyAPIView(DestroyAPIView):
+    queryset = Favorite.objects.all()
+    serializer_class = FavoriteModelSerializer
+    permission_classes = IsAuthenticated,
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(user=self.request.user)
+
+
 @extend_schema(tags=['products'])
 class CategoryListCreateAPIView(ListCreateAPIView):
     queryset = Category.objects.all()
@@ -108,9 +137,43 @@ class SellerCreateAPIView(CreateAPIView):
     permission_classes = IsAuthenticated,
 
 
+@extend_schema(tags=['users'])
+class CartItemListAPIView(ListCreateAPIView):
+    queryset = CartItem.objects.select_related('product', 'product__seller')
+    serializer_class = CartItemModelSerializer
+    pagination_class = None
+    permission_classes = IsAuthenticated,
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(cart__user=self.request.user)
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        cart, created = Cart.objects.get_or_create(user=user)
+        serializer.save(cart=cart)
+
+
+@extend_schema(tags=['users'])
+class CartItemUpdateDestroyAPIView(UpdateAPIView, DestroyAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemModelSerializer
+    permission_classes = IsAuthenticated,
+    http_method_names = ['patch', 'delete']
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        return qs.filter(cart__user=self.request.user)
+
+
+@extend_schema(tags=['auth'])
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
 
+
+@extend_schema(tags=['auth'])
+class CustomTokenRefreshView(TokenRefreshView):
+    pass
 #
 # @extend_schema(tags=['products'])
 # class CategoryRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):

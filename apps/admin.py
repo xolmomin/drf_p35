@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.admin import StackedInline
 
-from apps.models import Category, Product, ProductImage
+from apps.models import Category, Product, ProductImage, Seller
 from apps.models.shops import ManufactureCategory, Manufacturer
 
 
@@ -16,13 +16,19 @@ class CategoryModelAdmin(admin.ModelAdmin):
     inlines = [ManufactureCategoryStackedInline]
 
 
-@admin.register(ProductImage)
-class ProductImageModelAdmin(admin.ModelAdmin):
-    pass
+class ProductImageStackedInline(StackedInline):
+    model = ProductImage
+    extra = 1
+    min_num = 0
 
 
 @admin.register(Product)
 class ProductModelAdmin(admin.ModelAdmin):
+    inlines = ProductImageStackedInline,
+
+
+@admin.register(Seller)
+class SellerModelAdmin(admin.ModelAdmin):
     pass
 
 

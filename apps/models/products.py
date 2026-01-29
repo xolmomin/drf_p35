@@ -28,9 +28,17 @@ class Product(SlugBaseModel, CreatedBaseModel):
     discount = PositiveSmallIntegerField(db_default=0)
     specification = JSONField(default=dict, blank=True)
     description = TextField(blank=True)
-    seller = ForeignKey('apps.User', CASCADE, limit_choices_to={'type': 'seller'}, related_name='products')
+    seller = ForeignKey('apps.Seller', CASCADE, related_name='products')
     category = ForeignKey('apps.Category', CASCADE, related_name='products')
+
+    @property
+    def first_image(self):
+        return self.favorites.count()
+        # img = self.images.first()
+        # if img:
+        #     return img.image.url
+        # return None
 
 
 class ProductImage(ImageBaseModel):
-    product = ForeignKey('apps.Product', CASCADE, related_name='products')
+    product = ForeignKey('apps.Product', CASCADE, related_name='images')
