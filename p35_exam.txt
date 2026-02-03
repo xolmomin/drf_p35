@@ -1,0 +1,107 @@
+AI dan foydalanish mumkin emas
+dokumentatsiyadan va eski kodlardan foydalanish mumkin
+
+tartib raqamizni 4ga bo'lganda chiqadigan qoldikga +1 qo'shamiz va bu variantimiz bo'ladi
+
+bu yerdagi modellarni kochirib oling
+https://github.com/xolmomin/drf_p35/blob/main/apps/models/exam_models.py
+
+
+
+1 VARIANT
+1. N+1 Optimization:
+ProductListModelSerializerda har bir mahsulot uchun umumiy sevimlilar sonini (favorites_count) chiqaruvchi field qo‘shing.
+Database so‘rovlari soni mahsulotlar soniga bog‘liq bo‘lmasligi (N+1 muammosi bo‘lmasligi) kerak.
+
+2. Validation Logic:
+UserRegisterModelSerializerda foydalanuvchi yoshi 18 dan kichik bo‘lsa,
+ValidationError qaytaruvchi validate_birth_date metodini yozing.
+
+3. Cart Security:
+CartItemListAPIViewda foydalanuvchi faqat o‘ziga tegishli savatchadagi mahsulotlarni ko‘rishi uchun get_querysetni to‘g‘ri filtrlang.
+
+4. Custom Field:
+CartItemModelSerializerda har bir element uchun umumiy narxni (total_price = quantity * product.price) hisoblab beruvchi SerializerMethodField yarating.
+
+5. Filtering:
+Product API uchun mahsulot nomi (name) bo‘yicha qidiruv (SarchFilter) va narx bo‘yicha saralash (OrderingFilter) imkoniyatini qo‘shing.
+
+
+
+2 VARIANT
+1. Warehouse Logic:
+CartItemModelSerializerda mahsulot qo‘shilayotganda Product.quantity (ombordagi soni) yetarli ekanligini tekshiring.
+Agar miqdor yetarli bo‘lmasa, "Omborda mahsulot yetarli emas" xabarini qaytaring.
+
+2. Custom Permission:
+Faqat type = 'seller' bo‘lgan foydalanuvchilar mahsulot yaratishi uchun IsSellerUser nomli custom permission yarating va uni View’ga biriktiring.
+
+3. Slug Update Logic:
+SlugBaseModel dagi save metodini shunday o‘zgartiringki,
+u faqat mahsulot yaratilayotganda emas, balki nomi tahrirlanib o‘zgarganda ham yangi slug yaratib bersin.
+
+4. Nested Category:
+CategoryModelSerializer ichida kategoriyaning ostidagi barcha sub-kategoriyalarni (children) rekursiv ko‘rinishda chiqaring.
+
+5. District Filter:
+DistrictListAPIView da viloyat ID-si (region_id) orqali filtrlashni django-filter yuborilgan parametrlar asosida sozlang.
+
+
+
+3 VARIANT
+1. Advanced Optimization:
+CartItemListAPIView da select_related va prefetch_relateddan foydalanib, product,
+seller va mahsulotning barcha rasmlarini jami 2-3 ta queryda yuklang.
+
+2. Password Safety:
+UserChangePasswordModelSerializerda yangi parol eski parol bilan bir xil bo‘lib qolmasligini tekshiruvchi validator yozing.
+
+3. Ownership Permission:
+Sotuvchi faqat o‘ziga tegishli mahsulotlarni tahrirlashi (patch) yoki o‘chirishi uchun IsProductOwner permission-ni yarating va Product ViewSet-ga qo‘shing.
+
+4. Dynamic Fields:
+ProductListModelSerializerdan foydalanib, foydalanuvchi so‘rovda yuborgan fieldlarini
+(masalan: ?fields=id,name) dinamik ravishda qaytaruvchi mantiqni View’da qo‘llang.
+
+5. Price Range Filter: ProductFilterSetda mahsulotlarni min_price va max_price (narx oralig‘i) bo‘yicha filtrlashni django-filter orqali amalga oshiring.
+
+
+
+4 VARIANT
+1. Image Processing:
+ImageBaseModel dagi convert_img_to_webp metodini takomillashtiring:
+u rasmni WebP ga o‘tkazgach, bazadan eski rasmni (original faylni) o‘chirib yuborsin.
+
+2. Inventory Recovery:
+Savatchadan mahsulot butunlay o‘chirilganda (CartItem.delete), o‘sha mahsulotning miqdori (quantity) Product modelida qaytadan oshishini (omborda tiklanishini) ta’minlang.
+
+3. Seller Constraint:
+SellerModelSerializerda validate metodi orqali bitta foydalanuvchi faqat bitta Seller (do‘kon) yarata olishi haqidagi cheklovni yozing.
+
+4. Discount Filter:
+Product API da faqat chegirmasi bor (discount > 0) bo‘lgan mahsulotlarni chiqaruvchi custom filter metodini (BooleanFilter) yozing.
+
+5. Hidden Defaults:
+SellerModelSerializerda owner maydoni foydalanuvchiga ko‘rinmasligi,
+lekin yaratilayotganda avtomatik ravishda so‘rov yuborgan foydalanuvchi (request.user) biriktirilishini ta’minlang.
+
+
+
+1 Abdulloh Nig’monjonov
+2 Abdumalik Yuldashev
+3 Abduraxmon Jo'rayev
+4 Akmal Atabayev
+5 Asadbek Ismatullayev
+6 Bunyod Shukuraliyev
+7 G'ulomov Muxammadamin
+8 Humoyun Rahmonov
+9 Jamshid Shokirov
+10 Manas Sarsenov
+11 Muhamadaziz Ibrogimov
+12 Odil Nosirov
+13 Quvonchbek Mirkamolov
+14 Shohruz G'ulomiddinov
+15 Sultonbek Saydullaev
+16 Umarxon Shermirzayev
+17 Valiyev Javlonbek
+18 Расулху́жа

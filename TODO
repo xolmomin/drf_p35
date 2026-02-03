@@ -63,3 +63,53 @@ random string (6) password ga biriktiriladi (userga sms yuboradi)
 
 filter larni qoshish
 
+
+
+
+
+docker
+git (github)
+uv (deployment)
+github cicd
+
+
+class  object
+image, container, network, volume
+
+
+                        computer            container
+docker                  1                   1
+docker compose          1                   n
+docker swarm (k8s)      n                   n
+
+
+
+
+docker build -t image_name .
+docker build -t drf_p35_image .
+
+
+docker run --name postgres_container -e POSTGRES_PASSWORD=1 -p 5432:5342 postgres:alpine
+docker run --name drf_p35_container -p 8000:8000 drf_p35_image
+docker run --rm -p 8000:8000 drf_p35_image
+
+docker exec -it drf_p35_container bash
+
+docker exec -itu postgres 4420cd1cbbcf psql -c "create database drf_p35_db;"
+docker compose exec -itu postgres postgres_service psql -c "create database drf_p35_db;"
+
+docker exec -it 555928a89f94 uv run python manage.py makemigrations
+docker compose exec -it backend_service uv run python manage.py makemigrations
+
+docker compose up --build -d
+docker compose up
+docker compose logs backend_service
+docker compose logs -f backend_service
+
+docker exec -it e1bf563ef613 sh
+docker compose exec -it backend_service sh
+docker compose ls
+docker compose down
+docker compose down -v
+
+10.30.15.95
