@@ -4,6 +4,8 @@ import string
 from django.core.cache import cache
 from django.tasks import task
 
+from apps.utils import logger
+
 
 def register_key(phone):
     return f"register:{phone}"
@@ -11,7 +13,7 @@ def register_key(phone):
 
 @task
 def send_sms_code(phone, msg):
-    print(f"📞 {phone}\n{msg}")
+    logger.info(f"📞 {phone}\n{msg}")
 
 
 @task

@@ -1,14 +1,24 @@
 import os.path
 from datetime import timedelta
 from pathlib import Path
-
 from django.conf import settings
+from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = "django-insecure-b1l74$1ux(quc*)7mw5^qd!)h)-6vc^9^1rxxbuek7+09e(1e5"
 
-DEBUG = True
+def is_in_docker():
+    return Path("/.dockerenv").exists()
+
+
+if not is_in_docker():
+    from dotenv import load_dotenv
+
+    load_dotenv('.env.local')
+
+SECRET_KEY = os.getenv('SECRET_KEY')
+
+DEBUG = os.getenv('DEBUG', False)
 
 ALLOWED_HOSTS = ['*']
 
@@ -69,11 +79,11 @@ AUTH_USER_MODEL = 'apps.User'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
-        "NAME": "drf_p35_db",
-        "USER": "postgres",
-        "PASSWORD": "1",
-        "HOST": "postgres_service",
-        "PORT": 5432
+        "NAME": os.getenv('POSTGRES_NAME'),
+        "USER": os.getenv('POSTGRES_USER'),
+        "PASSWORD": os.getenv('POSTGRES_PASSWORD'),
+        "HOST": os.getenv('POSTGRES_HOST'),
+        "PORT": os.getenv('POSTGRES_PORT')
     }
 }
 
@@ -115,10 +125,14 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+REDIS_HOST = os.getenv('REDIS_HOST')
+REDIS_PORT = os.getenv('REDIS_PORT')
+REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379",
+        "LOCATION": REDIS_URL,
     }
 }
 

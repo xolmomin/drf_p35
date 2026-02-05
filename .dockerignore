@@ -20,6 +20,7 @@ cmake-build-*/
 out/
 .idea
 .venv
+.env
 .idea_modules/
 atlassian-ide-plugin.xml
 .idea/replstate.xml
