@@ -12,6 +12,7 @@ class User(AbstractUser):
         USER = 'user', 'User'
         SELLER = 'seller', 'Seller'
         MANAGER = 'manager', 'Manager'
+
     phone = CharField(max_length=15, validators=[uz_phone_validator], unique=True)
     type = CharField(max_length=25, choices=Type.choices, default=Type.USER)
     birth_date = DateField(null=True, blank=True)
@@ -25,4 +26,3 @@ class User(AbstractUser):
 class UserBalance(Model):
     user = OneToOneField('apps.User', CASCADE, related_name='user_balance')
     balance = BigIntegerField(default=0)
-

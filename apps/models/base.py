@@ -1,14 +1,11 @@
-from datetime import datetime
 from io import BytesIO
 
 from PIL import Image
-from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.files.uploadedfile import InMemoryUploadedFile, TemporaryUploadedFile
 from django.core.validators import FileExtensionValidator
 from django.db.models import Model, ImageField
 from django.db.models.fields import SlugField, DateTimeField
-from django.db.models.fields.files import ImageFieldFile
 from django.utils.text import slugify
 
 from apps.models.utils import upload_to_image, upload_image_size_5mb_validator

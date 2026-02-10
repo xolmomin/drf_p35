@@ -1,4 +1,4 @@
-from django.db.models import ForeignKey, CASCADE, OneToOneRel, OneToOneField
+from django.db.models import ForeignKey, CASCADE, OneToOneField
 from django.db.models.enums import TextChoices
 from django.db.models.fields import CharField, IntegerField
 

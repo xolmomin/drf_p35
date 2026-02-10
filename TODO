@@ -116,8 +116,16 @@ docker compose down -v
 
 django, celery, celery beat, flower, postgres, redis
 
+uv deployment
 
-nginx
 health check
+nginx + cors headers
+
+nginx-proxy-manager
 scale
 
+testing     - test
+development - dev
+production  - prod
+
+postgres, redis, backend

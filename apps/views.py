@@ -1,14 +1,13 @@
-from django.db.models import Subquery
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema
 from rest_framework.generics import ListCreateAPIView, ListAPIView, CreateAPIView, \
-    RetrieveAPIView, UpdateAPIView, RetrieveUpdateDestroyAPIView, DestroyAPIView
+    RetrieveAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
-from apps.models import Region, District, Category, User, Seller, CartItem, Cart, Favorite, Product
+from apps.models import Region, District, Category, User, Seller, CartItem, Cart, Favorite
 #
 # from apps.filters import UserFilterSet, OrderFilterSet
 # from apps.models import Category, Product, User, Order
