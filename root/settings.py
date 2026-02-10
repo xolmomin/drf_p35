@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'mptt',
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -129,6 +130,8 @@ REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PORT = os.getenv('REDIS_PORT')
 REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
 
+CELERY_BROKER_URL = REDIS_URL
+
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.redis.RedisCache",
@@ -215,6 +218,8 @@ SIMPLE_JWT = {
     "REVOKE_TOKEN_CLAIM": "hash_password",
     "CHECK_USER_IS_ACTIVE": True,
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # LOGGING = {
 #     'version': 1,

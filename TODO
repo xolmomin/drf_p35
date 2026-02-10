@@ -111,3 +111,13 @@ docker compose exec -it backend_service sh
 docker compose ls
 docker compose down
 docker compose down -v
+
+
+
+django, celery, celery beat, flower, postgres, redis
+
+
+nginx
+health check
+scale
+
